@@ -1,0 +1,11 @@
+.empty-transaction {
+  text-align: center;
+  color: #999;
+  margin: 40px 0;
+  font-size: 1.2rem;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-top: 10px;
+}
