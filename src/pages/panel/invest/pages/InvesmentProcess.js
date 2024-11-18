@@ -67,7 +67,7 @@ const InvestmentProcess = () => {
     try {
       const response = await InvestmentApi(payload);
       if (response) {
-        toast.success(response?.data?.message, {
+        toast.success(response?.message, {
           duration: 10000,
         });
         setModal(false);
@@ -340,7 +340,10 @@ const InvestmentProcess = () => {
                         min: 50, // Static minimum value
                         max: 1000, // Static maximum value
                       }}
-                      start={sliderVal}
+                      start={rangeVal}
+                      onSlide={(values) => {
+                        setRangVal(Math.round(values[0])); // Update state with the slider value
+                      }}
                       behaviour="tap"
                       connect={[true, false]}
                     />

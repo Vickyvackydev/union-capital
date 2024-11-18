@@ -32,8 +32,10 @@ import { GetPaymentMethods, GetWalletsByUserId, WithdrawalApi } from "../../../.
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../../state/slices/authreducer";
 import toast from "react-hot-toast";
+import { TokenBTC, TokenETH, TokenSOL } from "@web3icons/react";
 
 const WithdrawalProcess = ({ match }) => {
+  const [walletAddress, setWalletAddress] = useState("");
   const [currentPlan, setCurrentPlan] = useState();
   const [currency, setCurrency] = useState("usd");
   const [rangeVal, setRangVal] = useState(100);
@@ -51,8 +53,28 @@ const WithdrawalProcess = ({ match }) => {
   //   address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
   // });
   const [paymentMethod, setPaymentMethod] = useState({});
+  const isNotValid = () => {
+    return amount === "" || !paymentMethod.currency || !isChecked;
+  };
 
   const { data: paymentMethods } = useQuery("payment-method", GetPaymentMethods);
+
+  const switchTokenIcons = () => {
+    switch (paymentMethod?.currency) {
+      case "BTC":
+        return <TokenBTC size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "ETH":
+        return <TokenETH size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "SOL":
+        return <TokenSOL size={24} variant="mono" className="my-custom-class" />;
+      default:
+        break;
+    }
+  };
 
   // const warningPrompt = () => {
   //   if (walletData?.balance > amount) {
@@ -384,9 +406,7 @@ const WithdrawalProcess = ({ match }) => {
                         className="invest-cc-chosen dropdown-indicator"
                       >
                         <div className="coin-item">
-                          <div className="coin-icon">
-                            <Icon name="offer-fill"></Icon>
-                          </div>
+                          <div className="coin-icon">{switchTokenIcons() || <Icon name="offer-fill"></Icon>}</div>
                           <div className="coin-info">
                             <span>{paymentMethod?.currency || "Select payment method"}</span>
                           </div>
@@ -587,7 +607,7 @@ const WithdrawalProcess = ({ match }) => {
                           color="primary"
                           className="ttu"
                           onClick={() => toggleModal()}
-                          disabled={!isChecked}
+                          disabled={isNotValid()}
                         >
                           {" "}
                           Confirm &amp; proceed
@@ -613,12 +633,18 @@ const WithdrawalProcess = ({ match }) => {
                       id="custom-amount"
                       placeholder="Enter Wallet Address"
                       //   value={}
-                      onChange={(e) => {}}
+                      onChange={(e) => setWalletAddress(e.target.value)}
                     />
                   </div>
                 </div>
                 <div className="nk-modal-action">
-                  <Button color="primary" size="lg" className="btn-mw" onClick={handleWithdraw}>
+                  <Button
+                    color="primary"
+                    size="lg"
+                    className="btn-mw"
+                    onClick={handleWithdraw}
+                    disabled={!walletAddress}
+                  >
                     {loading ? "Please wait..." : "Withdraw"}
                   </Button>
                   <a

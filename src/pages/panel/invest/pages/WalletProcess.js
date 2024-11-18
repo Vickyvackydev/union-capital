@@ -33,6 +33,7 @@ import QRCode from "react-qr-code";
 import toast from "react-hot-toast";
 import { selectUser } from "../../../../state/slices/authreducer";
 import { useSelector } from "react-redux";
+import { TokenBTC, TokenETH, TokenIcon, TokenSOL } from "@web3icons/react";
 
 const WalletProcess = ({ history }) => {
   const [loading, setLoading] = useState();
@@ -48,9 +49,30 @@ const WalletProcess = ({ history }) => {
 
   const [formData, setFormData] = useState({
     amount: 0,
-
     transaction_id: "",
   });
+
+  const [paymentMethod, setPaymentMethod] = useState({});
+  const isNotValid = () => {
+    return formData.amount === "" || !paymentMethod.currency || !isChecked;
+  };
+
+  const switchTokenIcons = () => {
+    switch (paymentMethod?.currency) {
+      case "BTC":
+        return <TokenBTC size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "ETH":
+        return <TokenETH size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "SOL":
+        return <TokenSOL size={24} variant="mono" className="my-custom-class" />;
+      default:
+        break;
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,8 +113,6 @@ const WalletProcess = ({ history }) => {
       setLoading(false);
     }
   };
-
-  const [paymentMethod, setPaymentMethod] = useState({});
 
   const { data: paymentMethods } = useQuery("payment-method", GetPaymentMethods);
 
@@ -171,15 +191,6 @@ const WalletProcess = ({ history }) => {
 
       <Content size="lg">
         <BlockHead>
-          {
-            //   <BlockHeadContent>
-            //     <BlockHeadSub>
-            //       <BackTo icon="arrow-left" link={`/invest/invest`}>
-            //         Back to plan
-            //       </BackTo>
-            //     </BlockHeadSub>
-            //   </BlockHeadContent>
-          }
           <BlockHeadContent>
             <BlockTitle tag="h2" className="fw-normal">
               Add Funds to Wallet
@@ -217,7 +228,8 @@ const WalletProcess = ({ history }) => {
                     >
                       <div className="coin-item">
                         <div className="coin-icon">
-                          <Icon name="offer-fill"></Icon>
+                          {switchTokenIcons() || <Icon name="offer-fill"></Icon>}
+                          {/* <TokenIcon symbol={`eth`} variant="mono" /> */}
                         </div>
                         <div className="coin-info">
                           <span>{paymentMethod?.currency || "Select payment method"}</span>
@@ -419,7 +431,7 @@ const WalletProcess = ({ history }) => {
                         color="primary"
                         className="ttu"
                         onClick={() => toggleModal()}
-                        disabled={!isChecked}
+                        disabled={isNotValid()}
                       >
                         {" "}
                         Confirm &amp; proceed
@@ -449,7 +461,7 @@ const WalletProcess = ({ history }) => {
               <div className="nk-modal-form">
                 <div className="form-group">
                   <span className="coin-text" style={{ display: "flex", alignItems: "start", justifyContent: "start" }}>
-                    Please enter the wallet/hash ID to comfirm your payment.
+                    Please enter the transaction hash ID to comfirm your payment.
                   </span>
                   <input
                     type="text"
@@ -473,6 +485,7 @@ const WalletProcess = ({ history }) => {
                   //   toggleConfirmModal();
                   //   togglePaymentDoneModal();
                   // }}
+                  disabled={!formData.transaction_id}
                   onClick={handlePayment}
                 >
                   {loading ? "Please wait..." : "Confirm Payment"}
