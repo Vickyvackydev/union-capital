@@ -98,6 +98,8 @@ const InvestmentProcess = () => {
     setDate(formattedDate);
   }, []);
 
+  // console.log(getSelectedPlan);
+
   // useEffect(() => {
   //   let foundEl = pricingTableDataV1.find((item) => item.id === match.params.id);
   //   if (foundEl) {
@@ -495,23 +497,16 @@ const InvestmentProcess = () => {
                           <div className="lead-text">{getSelectedPlan?.duration_days} days</div> {/* Static term */}
                         </li>
                         <li>
-                          <div className="sub-text">Daily profit</div>
-                          <div className="lead-text">{getSelectedPlan?.cumulative_profits} USD</div>{" "}
+                          <div className="sub-text">Total profit</div>
+                          <div className="lead-text">{getSelectedPlan?.cumulative_profit} USD</div>{" "}
                           {/* Static daily profit */}
                         </li>
                         <li>
                           <div className="sub-text">Daily profit %</div>
-                          <div className="lead-text">{getSelectedPlan?.cumulative_profit}%</div>{" "}
+                          <div className="lead-text">{getSelectedPlan?.daily_profit}%</div>{" "}
                           {/* Static daily profit percentage */}
                         </li>
-                        <li>
-                          <div className="sub-text">Total net profit</div>
-                          <div className="lead-text">150 USD</div> {/* Static total net profit */}
-                        </li>
-                        <li>
-                          <div className="sub-text">Total Return</div>
-                          <div className="lead-text">200 USD</div> {/* Static total return */}
-                        </li>
+
                         <li>
                           <div className="sub-text">Term start at</div>
                           <div className="lead-text">
@@ -620,7 +615,7 @@ const InvestmentProcess = () => {
                   <strong>
                     {rangeVal} {currency.toUpperCase()}
                   </strong>{" "}
-                  using your <strong>{wallet.label}</strong>.
+                  using your <strong>Wallet</strong>.
                 </p>
               </div>
               <div className="nk-modal-action-lg">
@@ -632,11 +627,11 @@ const InvestmentProcess = () => {
                   </li>
                   <li>
                     <Link
-                      to={`${process.env.PUBLIC_URL}/invest/scheme-details`}
+                      to={`${process.env.PUBLIC_URL}/invest/scheme-details/plan-v-1`}
                       className="btn btn-lg btn-mw btn-dim btn-primary"
                     >
                       <Icon name="reports"></Icon>
-                      <span>See the plan</span>
+                      <span>Investment</span>
                     </Link>
                   </li>
                 </ul>
@@ -646,7 +641,7 @@ const InvestmentProcess = () => {
           <ModalFooter className="bg-lighter">
             <div className="text-center w-100">
               <p>
-                Earn upto $25 for each friend your refer!{" "}
+                Earn upto $5 for each friend your refer!{" "}
                 <a href="#tag" onClick={(ev) => ev.preventDefault()}>
                   Invite friends
                 </a>

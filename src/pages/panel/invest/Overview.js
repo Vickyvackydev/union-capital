@@ -31,7 +31,7 @@ import { ReferralCharts } from "../../../components/partials/charts/panel/PanelC
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../state/slices/authreducer";
 import { useQuery } from "react-query";
-import { GetUserWallet, GetWalletsByUserId, overviewAnalyticsApi } from "../../../services/service";
+import { GetInvestmentApi, GetUserWallet, GetWalletsByUserId, overviewAnalyticsApi } from "../../../services/service";
 
 const settings = {
   dots: true,
@@ -51,13 +51,14 @@ const Overview = () => {
 
   const getUserDetails = useSelector(selectUser);
   const { data: userwallet, isLoading } = useQuery("wallets", GetUserWallet);
+  const { data: investments } = useQuery("investment", GetInvestmentApi);
   // const { data: walletData } = useQuery(["wallet", getUserDetails?.id], () => GetWalletsByUserId(getUserDetails?.id));
   const onCopyClick = () => {
     setCopy(true);
     setTimeout(() => setCopy(false), 2000);
   };
 
-  console.log(userwallet);
+  console.log(investments);
 
   return (
     <React.Fragment>
@@ -88,7 +89,7 @@ const Overview = () => {
             <BlockHeadContent className="d-none d-md-block">
               <div className="nk-slider nk-slider-s1">
                 <Slider {...settings}>
-                  <div className="nk-iv-wg1">
+                  {/* <div className="nk-iv-wg1">
                     <div className="nk-iv-wg1-sub sub-text">My Active Investments</div>
                     <h6 className="nk-iv-wg1-info title">Silver - 4.76% for 21 Days</h6>
                     <a href="#slide" onClick={(ev) => ev.preventDefault()} className="nk-iv-wg1-link link link-light">
@@ -99,8 +100,8 @@ const Overview = () => {
                       //   <div className="progress-bar bg-primary" style={{ width: "50%" }}></div>
                       // </div>
                     }
-                  </div>
-                  <div className="nk-iv-wg1">
+                  </div> */}
+                  {/* <div className="nk-iv-wg1">
                     <div className="nk-iv-wg1-sub sub-text">My Active Investments</div>
                     <h6 className="nk-iv-wg1-info title">Gold - 10.76% for 7 Days</h6>
                     <a href="#slide" onClick={(ev) => ev.preventDefault()} className="nk-iv-wg1-link link link-light">
@@ -111,19 +112,23 @@ const Overview = () => {
                       //   <div className="progress-bar bg-primary" style={{ width: "20%" }}></div>
                       // </div>
                     }
-                  </div>
-                  <div className="nk-iv-wg1">
-                    <div className="nk-iv-wg1-sub sub-text">My Active Investments</div>
-                    <h6 className="nk-iv-wg1-info title">Platinum - 12.76% for 30 Days</h6>
-                    <a href="#slide" onClick={(ev) => ev.preventDefault()} className="nk-iv-wg1-link link link-light">
-                      <Icon name="trend-up"></Icon>
-                    </a>
-                    {
-                      // <div className="nk-iv-wg1-progress">
-                      //   <div className="progress-bar bg-primary" style={{ width: "80%" }}></div>
-                      // </div>
-                    }
-                  </div>
+                  </div> */}
+                  {investments?.records?.map((item) => (
+                    <div className="nk-iv-wg1">
+                      <div className="nk-iv-wg1-sub sub-text">My Active Investments</div>
+                      <h6 className="nk-iv-wg1-info title">
+                        {item?.plan?.name} - {item?.plan?.cumulative_profit}% for {item?.plan?.duration_days} Days
+                      </h6>
+                      <a href="#slide" onClick={(ev) => ev.preventDefault()} className="nk-iv-wg1-link link link-light">
+                        <Icon name="trend-up"></Icon>
+                      </a>
+                      {
+                        // <div className="nk-iv-wg1-progress">
+                        //   <div className="progress-bar bg-primary" style={{ width: "80%" }}></div>
+                        // </div>
+                      }
+                    </div>
+                  ))}
                 </Slider>
               </div>
             </BlockHeadContent>
@@ -249,19 +254,21 @@ const Overview = () => {
                     <h6 className="title">Balance Analysis</h6>
                   </div>
                   <div className="nk-iv-wg2-text">
-                    <div className="nk-iv-wg2-amount ui-v2">12,587.96</div>
+                    <div className="nk-iv-wg2-amount ui-v2">
+                      {userwallet?.balance + overview_data?.total_invested}.00
+                    </div>
                     <ul className="nk-iv-wg2-list">
                       <li>
                         <span className="item-label">Available Funds</span>
-                        <span className="item-value">105.94</span>
+                        <span className="item-value">{userwallet?.balance}.00</span>
                       </li>
                       <li>
                         <span className="item-label">Invested Funds</span>
-                        <span className="item-value">12,582.02</span>
+                        <span className="item-value">{overview_data?.total_invested}.00</span>
                       </li>
                       <li className="total">
                         <span className="item-label">Total</span>
-                        <span className="item-value">12,587.96</span>
+                        <span className="item-value">{userwallet?.balance + overview_data?.total_invested}.00</span>
                       </li>
                     </ul>
                   </div>
@@ -318,7 +325,7 @@ const Overview = () => {
                       </Link>
                     </Button>
                     <div className="cta-extra">
-                      Earn up to 25${" "}
+                      Earn up to 5${" "}
                       <a href="#link" onClick={(ev) => ev.preventDefault()} className="link link-dark">
                         Refer friend!
                       </a>
@@ -336,10 +343,13 @@ const Overview = () => {
                   </div>
                   <div className="nk-iv-wg2-text">
                     <div className="nk-iv-wg2-amount ui-v2">
-                      319 <span className="sub">03</span> Active
+                      {investments?.records?.length > 10
+                        ? investments?.records?.length
+                        : `0${investments?.records?.length}`}{" "}
+                      Active
                     </div>
                     <ul className="nk-iv-wg2-list">
-                      <li>
+                      {/* <li>
                         <span className="item-label">
                           <a href="#link" onClick={(ev) => ev.preventDefault()}>
                             Silver
@@ -347,8 +357,8 @@ const Overview = () => {
                           <small>- 4.76% for 21 Days</small>
                         </span>
                         <span className="item-value">2,500.00</span>
-                      </li>
-                      <li>
+                      </li> */}
+                      {/* <li>
                         <span className="item-label">
                           <a href="#link" onClick={(ev) => ev.preventDefault()}>
                             Silver
@@ -356,8 +366,8 @@ const Overview = () => {
                           <small>- 4.76% for 21 Days</small>
                         </span>
                         <span className="item-value">2,000.00</span>
-                      </li>
-                      <li>
+                      </li> */}
+                      {/* <li>
                         <span className="item-label">
                           <a href="#link" onClick={(ev) => ev.preventDefault()}>
                             Dimond
@@ -365,16 +375,20 @@ const Overview = () => {
                           <small>- 14.29% for 14 Days</small>
                         </span>
                         <span className="item-value">8,000.00</span>
-                      </li>
-                      <li>
-                        <span className="item-label">
-                          <a href="#link" onClick={(ev) => ev.preventDefault()}>
-                            Starter
-                          </a>{" "}
-                          <small>- 1.67% for 30 Days</small>
-                        </span>
-                        <span className="item-value">335.00</span>
-                      </li>
+                      </li> */}
+                      {investments?.records?.map((item) => (
+                        <li>
+                          <span className="item-label">
+                            <a href="#link" onClick={(ev) => ev.preventDefault()}>
+                              {item?.plan?.name}
+                            </a>{" "}
+                            <small>
+                              - {item?.plan?.cumulative_profit}% for {item?.plan?.duration_days} Days
+                            </small>
+                          </span>
+                          <span className="item-value">{overview_data?.total_invested}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                   <div className="nk-iv-wg2-cta">

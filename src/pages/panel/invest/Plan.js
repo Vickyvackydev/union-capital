@@ -17,14 +17,13 @@ import { Button, Card, Col, DropdownItem, DropdownMenu, DropdownToggle, Row, Unc
 import { ProfitCharts } from "../../../components/partials/charts/panel/PanelCharts";
 import { BASE_URL } from "../../../App";
 import { useQuery } from "react-query";
-import { GetInvestMents } from "../../../services/service";
+import { GetInvestmentApi } from "../../../services/service";
 
 const Plan = () => {
   const [investments, setInvestments] = useState([]);
+  const { data: investmentData } = useQuery("investment", GetInvestmentApi);
 
-  const { data: investmentsData } = useQuery("investments", GetInvestMents);
-  console.log(investmentsData);
-
+  console.log(investmentData);
   return (
     <React.Fragment>
       <Head title="Investments"></Head>

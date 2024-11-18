@@ -4,10 +4,7 @@ export const GetPlans = async () => {
   const response = await API.get("/plans");
   return response?.data?.data;
 };
-export const GetInvestMents = async () => {
-  const response = await API.get("/investments");
-  return response?.data;
-};
+
 export const GetTransactions = async () => {
   const response = await API.get("/transactions/user");
   return response?.data?.data;
@@ -40,4 +37,8 @@ export const WithdrawalApi = async (data) => {
 export const InvestmentApi = async (data) => {
   const response = await API.post("/investments/user/create", data);
   return response?.data;
+};
+export const GetInvestmentApi = async () => {
+  const response = await API.get("/investments/user");
+  return response?.data?.data;
 };
