@@ -34,7 +34,7 @@ import toast from "react-hot-toast";
 import { selectUser } from "../../../../state/slices/authreducer";
 import { useSelector } from "react-redux";
 
-const WalletProcess = ({ match }) => {
+const WalletProcess = ({ history }) => {
   const [loading, setLoading] = useState();
   const [currentPlan, setCurrentPlan] = useState();
   const [currency, setCurrency] = useState("usd");
@@ -54,7 +54,8 @@ const WalletProcess = ({ match }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    const amountField = ["amount"].includes(name);
+    if (amountField && !/^[0-9]*\.?[0-9]*$/.test(value)) return;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -77,7 +78,7 @@ const WalletProcess = ({ match }) => {
       if (res) {
         setModal(false);
         setPaymentDoneModal(true);
-        toast.success(res?.message);
+        toast.success("Payment has being confirmed");
         setFormData({
           amount: 0,
           transaction_id: "",
@@ -132,7 +133,7 @@ const WalletProcess = ({ match }) => {
 
   const togglePaymentDoneModal = () => {
     setPaymentDoneModal(!confirmModal);
-    window.history.back();
+    history.push("/");
   };
 
   const calculateProfitReturns = (interest, term, principle) => {
@@ -447,6 +448,9 @@ const WalletProcess = ({ match }) => {
               </div>
               <div className="nk-modal-form">
                 <div className="form-group">
+                  <span className="coin-text" style={{ display: "flex", alignItems: "start", justifyContent: "start" }}>
+                    Please enter the wallet/hash ID to comfirm your payment.
+                  </span>
                   <input
                     type="text"
                     className="form-control form-control-amount form-control-lg"
