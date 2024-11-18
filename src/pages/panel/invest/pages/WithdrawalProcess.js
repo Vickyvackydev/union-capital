@@ -75,6 +75,22 @@ const WithdrawalProcess = ({ match }) => {
         break;
     }
   };
+  const switchTokenIconsV2 = (currency) => {
+    switch (currency) {
+      case "BTC":
+        return <TokenBTC size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "ETH":
+        return <TokenETH size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "SOL":
+        return <TokenSOL size={24} variant="mono" className="my-custom-class" />;
+      default:
+        break;
+    }
+  };
 
   // const warningPrompt = () => {
   //   if (walletData?.balance > amount) {
@@ -424,7 +440,8 @@ const WithdrawalProcess = ({ match }) => {
                             >
                               <div className="coin-item">
                                 <div className="coin-icon">
-                                  <Icon name="offer-fill"></Icon>
+                                  {/* <Icon name="offer-fill"></Icon> */}
+                                  {switchTokenIconsV2(item?.currency)}
                                 </div>
                                 <div className="coin-info">
                                   <span className="coin-name">{item?.currency}</span>

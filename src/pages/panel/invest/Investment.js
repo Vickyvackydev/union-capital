@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
 import Slider from "react-slick";
-import { Button, Col, Row } from "reactstrap";
+import { Button, Col, Row, Spinner } from "reactstrap";
 import { returnCurrency } from "../../../utils/Utils";
 import {
   Block,
@@ -42,7 +42,7 @@ const Investment = () => {
   const [selectedPlan, setSelectedPlan] = useState("");
   const dispatch = useDispatch();
   const getPlansData = useSelector(selectPlan);
-  const { data: plansData } = useQuery("plans", GetPlans);
+  const { data: plansData, isLoading } = useQuery("plans", GetPlans);
   // const [selectedPlanData, setSelectedPlanData] = useState({});
   console.log(getPlansData);
 
@@ -76,12 +76,12 @@ const Investment = () => {
                       ev.preventDefault();
                       setSelectedCurrency("ltc");
                     }}
-                    className={`nav-link ${selectedCurrency === "ltc" ? "active" : ""}`}
+                    className={`nav-link ${selectedCurrency === "usd" ? "active" : ""}`}
                   >
-                    LTC
+                    USD
                   </a>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <a
                     href="#link"
                     onClick={(ev) => {
@@ -92,8 +92,8 @@ const Investment = () => {
                   >
                     BTC
                   </a>
-                </li>
-                <li className="nav-item">
+                </li> */}
+                {/* <li className="nav-item">
                   <a
                     href="#link"
                     onClick={(ev) => {
@@ -104,99 +104,105 @@ const Investment = () => {
                   >
                     ETH
                   </a>
-                </li>
+                </li> */}
               </ul>
             </div>
             <div className="plan-iv-list nk-slider nk-slider-s2">
-              <Slider {...settings} slide={<li />}>
-                {plansData !== undefined &&
-                  plansData?.records?.length > 0 &&
-                  plansData?.records?.map((item) => (
-                    <li className="plan-item" key={item.id} onClick={() => setSelectedPlan(item.id)}>
-                      <input
-                        type="radio"
-                        name="plan-iv"
-                        id={item.id}
-                        className="plan-control"
-                        defaultChecked={item.id === selectedPlan}
-                        tabIndex="0"
-                      />
-                      <div className="plan-item-card card-bordered">
-                        <div className="plan-item-head">
-                          <div className="plan-item-heading">
-                            <h4 className="plan-item-title card-title title">{item.name}</h4>
-                            <p className="sub-text">{item.caption}</p>
+              {isLoading ? (
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Spinner size={"xl"} color={"primary"} />
+                </div>
+              ) : (
+                <Slider {...settings} slide={<li />}>
+                  {plansData !== undefined &&
+                    plansData?.records?.length > 0 &&
+                    plansData?.records?.map((item) => (
+                      <li className="plan-item" key={item.id} onClick={() => setSelectedPlan(item.id)}>
+                        <input
+                          type="radio"
+                          name="plan-iv"
+                          id={item.id}
+                          className="plan-control"
+                          defaultChecked={item.id === selectedPlan}
+                          tabIndex="0"
+                        />
+                        <div className="plan-item-card card-bordered">
+                          <div className="plan-item-head">
+                            <div className="plan-item-heading">
+                              <h4 className="plan-item-title card-title title">{item.name}</h4>
+                              <p className="sub-text">{item.caption}</p>
+                            </div>
+                            <div className="plan-item-summary card-text">
+                              <Row>
+                                <Col className="col-6">
+                                  <span className="lead-text">{item.cumulative_profit}%</span>
+                                  <span className="sub-text">Daily Interest</span>
+                                </Col>
+                                <Col className="col-6">
+                                  <span className="lead-text">{item.duration_days}</span>
+                                  <span className="sub-text">Term Days</span>
+                                </Col>
+                              </Row>
+                            </div>
                           </div>
-                          <div className="plan-item-summary card-text">
-                            <Row>
-                              <Col className="col-6">
-                                <span className="lead-text">{item.cumulative_profit}%</span>
-                                <span className="sub-text">Daily Interest</span>
-                              </Col>
-                              <Col className="col-6">
-                                <span className="lead-text">{item.duration_days}</span>
-                                <span className="sub-text">Term Days</span>
-                              </Col>
-                            </Row>
-                          </div>
-                        </div>
-                        <div className="plan-item-body">
-                          <div className="plan-item-desc card-text">
-                            <ul className="plan-item-desc-list">
-                              <li>
-                                <span className="desc-label">Min Deposit</span> -{" "}
-                                <span className="desc-data">
-                                  {item?.min_deposit}
-                                  {/* {selectedCurrency !== "btc"
+                          <div className="plan-item-body">
+                            <div className="plan-item-desc card-text">
+                              <ul className="plan-item-desc-list">
+                                <li>
+                                  <span className="desc-label">Min Deposit</span> -{" "}
+                                  <span className="desc-data">
+                                    {item?.min_deposit}
+                                    {/* {selectedCurrency !== "btc"
                                     ? Number(returnCurrency(selectedCurrency, item.min_deposit).value).toFixed(0) +
                                       " " +
                                       returnCurrency(selectedCurrency, item.min_deposit, true).label
                                     : Number(returnCurrency(selectedCurrency, item.min_deposit).value).toFixed(6) +
                                       " " +
                                       returnCurrency(selectedCurrency, item.min_deposit, true).label} */}
-                                </span>
-                              </li>
-                              <li>
-                                <span className="desc-label">Max Deposit</span> -{" "}
-                                <span className="desc-data">
-                                  {item?.max_deposit}
-                                  {/* {selectedCurrency !== "btc"
+                                  </span>
+                                </li>
+                                <li>
+                                  <span className="desc-label">Max Deposit</span> -{" "}
+                                  <span className="desc-data">
+                                    {item?.max_deposit}
+                                    {/* {selectedCurrency !== "btc"
                                     ? Number(returnCurrency(selectedCurrency, item.max_deposit).value).toFixed(0) +
                                       " " +
                                       returnCurrency(selectedCurrency, item.max_deposit, true).label
                                     : Number(returnCurrency(selectedCurrency, item.max_deposit).value).toFixed(6) +
                                       " " +
                                       returnCurrency(selectedCurrency, item.max_deposit, true).label} */}
-                                </span>
-                              </li>
-                              <li>
-                                <span className="desc-label">Deposit Return</span> -{" "}
-                                <span className="desc-data">Yes</span>
-                              </li>
-                              <li>
-                                <span className="desc-label">Total Return</span> -{" "}
-                                <span className="desc-data">{item.totalReturn}%</span>
-                              </li>
-                            </ul>
-                            <div className="plan-item-action">
-                              <label
-                                htmlFor={item.id}
-                                className="plan-label"
-                                onClick={() => {
-                                  setSelectedPlan(item?.id);
-                                  dispatch(setSelectedPlanData(item));
-                                }}
-                              >
-                                <span className="plan-label-base">Choose this plan</span>
-                                <span className="plan-label-selected">Plan Selected</span>
-                              </label>
+                                  </span>
+                                </li>
+                                <li>
+                                  <span className="desc-label">Deposit Return</span> -{" "}
+                                  <span className="desc-data">Yes</span>
+                                </li>
+                                <li>
+                                  <span className="desc-label">Total Return</span> -{" "}
+                                  <span className="desc-data">{item.totalReturn}%</span>
+                                </li>
+                              </ul>
+                              <div className="plan-item-action">
+                                <label
+                                  htmlFor={item.id}
+                                  className="plan-label"
+                                  onClick={() => {
+                                    setSelectedPlan(item?.id);
+                                    dispatch(setSelectedPlanData(item));
+                                  }}
+                                >
+                                  <span className="plan-label-base">Choose this plan</span>
+                                  <span className="plan-label-selected">Plan Selected</span>
+                                </label>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </li>
-                  ))}
-              </Slider>
+                      </li>
+                    ))}
+                </Slider>
+              )}
             </div>
             <div className="plan-iv-actions text-center">
               <Link to={`${process.env.PUBLIC_URL}/invest/invest-form/${selectedPlan}`}>

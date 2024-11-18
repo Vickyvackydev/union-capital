@@ -31,6 +31,7 @@ import { useSelector } from "react-redux";
 import { selectPlan } from "../../../../state/slices/globalreducer";
 import {
   GetPlans,
+  GetUserWallet,
   GetWallets,
   GetWalletsByUserId,
   InvestmentApi,
@@ -44,20 +45,24 @@ const InvestmentProcess = () => {
   const [currentPlan, setCurrentPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currency, setCurrency] = useState("usd");
-  const [rangeVal, setRangVal] = useState("100");
+  const [rangeVal, setRangVal] = useState("");
   const [sliderVal, setSliderVal] = useState(0);
   const [modal, setModal] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const [confirmModal, setConfirmModal] = useState(false);
   const [wallet, setWallet] = useState({
     label: "NioWallet",
     value: "2.014095 BTC ( $18,934.84 )",
   });
   const user = useSelector(selectUser);
-
+  const { data: user_wallet } = useQuery("wallet", GetUserWallet);
   const { data: plansData } = useQuery("plans", GetPlans);
 
+  const [date, setDate] = useState("");
   const getSelectedPlan = useSelector(selectPlan);
-
+  const isNotValid = () => {
+    return rangeVal === "" || !isChecked;
+  };
   const handleInvestMent = async () => {
     setLoading(true);
     const payload = {
@@ -80,6 +85,19 @@ const InvestmentProcess = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const today = new Date();
+    const resultDate = new Date(today.setDate(today.getDate() + 45));
+
+    const year = resultDate.getFullYear();
+    const month = String(resultDate.getMonth() + 1).padStart(2, "0");
+    const day = String(resultDate.getDate()).padStart(2, "0");
+
+    const formattedDate = `${year}-${month}-${day}`;
+    setDate(formattedDate);
+  }, []);
+
   // useEffect(() => {
   //   let foundEl = pricingTableDataV1.find((item) => item.id === match.params.id);
   //   if (foundEl) {
@@ -331,14 +349,14 @@ const InvestmentProcess = () => {
                       type="text"
                       className="form-control form-control-amount form-control-lg"
                       id="custom-amount"
-                      value={rangeVal}
+                      value={rangeVal ?? getSelectedPlan?.min_deposit}
                       onChange={(e) => setRangVal(e.target.value)}
                     />
                     <Nouislider
                       className="form-range-slider"
                       range={{
-                        min: 50, // Static minimum value
-                        max: 1000, // Static maximum value
+                        min: getSelectedPlan?.min_deposit, // Static minimum value
+                        max: getSelectedPlan?.max_deposit, // Static maximum value
                       }}
                       start={rangeVal}
                       onSlide={(values) => {
@@ -351,7 +369,7 @@ const InvestmentProcess = () => {
 
                   <div className="form-note pt-2">
                     {/* Static values for min and max deposit */}
-                    {`Note: Minimum invest $50 USD and upto $1000 USD`}
+                    {`Note: Minimum invest ${getSelectedPlan?.min_deposit} USD and upto ${getSelectedPlan?.max_deposit} USD`}
                   </div>
                 </div>
                 <div className="form-group invest-field">
@@ -371,13 +389,13 @@ const InvestmentProcess = () => {
                           <Icon name="offer-fill"></Icon>
                         </div>
                         <div className="coin-info">
-                          <span className="coin-name">{wallet.label}</span>
-                          <span className="coin-text">Current balance: {wallet.value}</span>
+                          <span className="coin-name">USD Wallet</span>
+                          <span className="coin-text">Current balance: {user_wallet?.balance}</span>
                         </div>
                       </div>
                     </DropdownToggle>
                     <DropdownMenu className="dropdown-menu-auto dropdown-menu-mxh">
-                      <li
+                      {/* <li
                         className={`invest-cc-item`}
                         onClick={() => setWallet({ label: "NioWallet", value: "2.014095 BTC ( $18,934.84 )" })}
                       >
@@ -397,8 +415,8 @@ const InvestmentProcess = () => {
                             </div>
                           </div>
                         </DropdownItem>
-                      </li>
-                      <li
+                      </li> */}
+                      {/* <li
                         className="invest-cc-item"
                         onClick={() => setWallet({ label: "BTC Wallet", value: " 2.014095 BTC" })}
                       >
@@ -418,9 +436,10 @@ const InvestmentProcess = () => {
                             </div>
                           </div>
                         </DropdownItem>
-                      </li>
+                      </li> */}
                       <li
                         className="invest-cc-item"
+                        style={{ cursor: "not-allowed" }}
                         onClick={() => setWallet({ label: "USD Wallet", value: " $18,934.84" })}
                       >
                         <DropdownItem
@@ -435,7 +454,7 @@ const InvestmentProcess = () => {
                             </div>
                             <div className="coin-info">
                               <span className="coin-name">USD Wallet</span>
-                              <span className="coin-text">Current balance : $18,934.84</span>
+                              <span className="coin-text">Current balance : $ {user_wallet?.balance}</span>
                             </div>
                           </div>
                         </DropdownItem>
@@ -445,7 +464,13 @@ const InvestmentProcess = () => {
                 </div>
                 <div className="form-group invest-field">
                   <div className="custom-control custom-control-xs custom-checkbox">
-                    <input type="checkbox" className="custom-control-input" id="checkbox" />
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="checkbox"
+                      value={isChecked}
+                      onChange={(e) => setIsChecked(e.target.checked)}
+                    />
                     <label className="custom-control-label" htmlFor="checkbox">
                       I agree the{" "}
                       <a href="#link" onClick={(ev) => ev.preventDefault()}>
@@ -476,7 +501,7 @@ const InvestmentProcess = () => {
                         </li>
                         <li>
                           <div className="sub-text">Daily profit %</div>
-                          <div className="lead-text">{getSelectedPlan?.cumulative_profits / 100}%</div>{" "}
+                          <div className="lead-text">{getSelectedPlan?.cumulative_profit}%</div>{" "}
                           {/* Static daily profit percentage */}
                         </li>
                         <li>
@@ -489,11 +514,14 @@ const InvestmentProcess = () => {
                         </li>
                         <li>
                           <div className="sub-text">Term start at</div>
-                          <div className="lead-text">Today (2024-11-14)</div> {/* Static date */}
+                          <div className="lead-text">
+                            Today {`(${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()})`}
+                          </div>{" "}
+                          {/* Static date */}
                         </li>
                         <li>
                           <div className="sub-text">Term end at</div>
-                          <div className="lead-text">2024-12-14</div> {/* Static end date */}
+                          <div className="lead-text">{date}</div> {/* Static end date */}
                         </li>
                       </ul>
                     </div>
@@ -501,7 +529,7 @@ const InvestmentProcess = () => {
                       <ul className="nk-iv-wg4-list">
                         <li>
                           <div className="sub-text">Payment Method</div>
-                          <div className="lead-text">NioWallet Wallet</div> {/* Static payment method */}
+                          <div className="lead-text">USD Wallet</div> {/* Static payment method */}
                         </li>
                       </ul>
                     </div>
@@ -511,20 +539,13 @@ const InvestmentProcess = () => {
                           <div className="sub-text">Amount to invest</div>
                           <div className="lead-text">{rangeVal} USD</div> {/* Static amount */}
                         </li>
-                        <li>
-                          <div className="sub-text">
-                            Conversion Fee <span>(0.5%)</span>
-                          </div>
-                          <div className="lead-text">{Number(rangeVal) * 0.0025} BTC</div> {/* Static conversion fee */}
-                        </li>
                       </ul>
                     </div>
                     <div className="nk-iv-wg4-sub">
                       <ul className="nk-iv-wg4-list">
                         <li>
                           <div className="lead-text">Total Charge</div>
-                          <div className="caption-text text-primary">{Number(rangeVal) * 0.0025} BTC</div>{" "}
-                          {/* Static total charge */}
+                          <div className="caption-text text-primary">{rangeVal} USD</div> {/* Static total charge */}
                         </li>
                       </ul>
                     </div>
@@ -535,7 +556,7 @@ const InvestmentProcess = () => {
                         handleInvestMent();
                       }}
                     >
-                      <Button size="lg" color="primary" className="ttu">
+                      <Button size="lg" color="primary" className="ttu" disabled={isNotValid()}>
                         {" "}
                         {loading ? "Please wait..." : <>Confirm &amp; proceed</>}
                       </Button>

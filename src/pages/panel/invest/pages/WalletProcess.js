@@ -45,7 +45,7 @@ const WalletProcess = ({ history }) => {
   const [confirmModal, setConfirmModal] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
-  const [paymentDoneModal, setPaymentDoneModal] = useState(false);
+  const [paymentDoneModal, setPaymentDoneModal] = useState(true);
 
   const [formData, setFormData] = useState({
     amount: 0,
@@ -59,6 +59,22 @@ const WalletProcess = ({ history }) => {
 
   const switchTokenIcons = () => {
     switch (paymentMethod?.currency) {
+      case "BTC":
+        return <TokenBTC size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "ETH":
+        return <TokenETH size={24} variant="mono" className="my-custom-class" />;
+
+        break;
+      case "SOL":
+        return <TokenSOL size={24} variant="mono" className="my-custom-class" />;
+      default:
+        break;
+    }
+  };
+  const switchTokenIconsV2 = (currency) => {
+    switch (currency) {
       case "BTC":
         return <TokenBTC size={24} variant="mono" className="my-custom-class" />;
 
@@ -247,9 +263,7 @@ const WalletProcess = ({ history }) => {
                             className="invest-cc-opt"
                           >
                             <div className="coin-item">
-                              <div className="coin-icon">
-                                <Icon name="offer-fill"></Icon>
-                              </div>
+                              <div className="coin-icon">{switchTokenIconsV2(item?.currency)}</div>
                               <div className="coin-info">
                                 <span className="coin-name">{item?.currency}</span>
                               </div>
@@ -515,8 +529,8 @@ const WalletProcess = ({ history }) => {
           <ModalBody className="modal-body-md text-center">
             <div className="nk-modal">
               <div className="nk-modal-text">
-                <span className="coin-text" style={{ fontSize: 20, color: "green" }}>
-                  Payment Was Successful
+                <span className="item-label">
+                  Your deposit will reflect on your wallet balance once the transaction is confirmed on Blockchain
                 </span>
               </div>
               <div className="nk-modal-action">
