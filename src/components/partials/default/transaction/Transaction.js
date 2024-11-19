@@ -31,8 +31,10 @@ const TransactionTable = () => {
       filteredData = transaction_data?.records?.filter((item) => item.status === "pending");
     } else if (trans === "approved") {
       filteredData = transaction_data?.records?.filter((item) => item.status === "approved");
-    } else {
+    } else if (trans === "all") {
       filteredData = transaction_data?.records;
+    } else {
+      filteredData === transaction_data?.records;
     }
     setData(filteredData);
   }, [trans]);
@@ -64,7 +66,7 @@ const TransactionTable = () => {
                   <span>Paid</span>
                 </a>
               </li>
-              <li className={trans === "Due" ? "active" : ""} onClick={() => setTrans("Due")}>
+              <li className={trans === "pending" ? "active" : ""} onClick={() => setTrans("pending")}>
                 <a
                   href="#pending"
                   onClick={(ev) => {
@@ -74,7 +76,7 @@ const TransactionTable = () => {
                   <span>Pending</span>
                 </a>
               </li>
-              <li className={trans === "" ? "active" : ""} onClick={() => setTrans("")}>
+              <li className={trans === "" ? "active" : ""} onClick={() => setTrans("all")}>
                 <a
                   href="#all"
                   onClick={(ev) => {
@@ -120,7 +122,7 @@ const TransactionTable = () => {
           </DataTableRow>
         </DataTableHead>
         {data !== undefined && data.length > 0 ? (
-          <div className="data-table">
+          <>
             {data.map((item, idx) => (
               <DataTableItem key={idx}>
                 <DataTableRow size="md">
@@ -141,7 +143,7 @@ const TransactionTable = () => {
                 </DataTableRow>
               </DataTableItem>
             ))}
-          </div>
+          </>
         ) : (
           <div className="empty-transaction">
             <p>No transactions available</p>

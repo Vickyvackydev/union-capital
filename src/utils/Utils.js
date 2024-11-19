@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 
 //url for production
@@ -197,3 +198,23 @@ export const returnLevel = (currency, data, upperCase) => {
     return data.ETH;
   }
 };
+
+function DynamicDate({ daysToAdd }) {
+  const [date, setDate] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const resultDate = new Date(today.setDate(today.getDate() + daysToAdd));
+
+    const year = resultDate.getFullYear();
+    const month = String(resultDate.getMonth() + 1).padStart(2, "0");
+    const day = String(resultDate.getDate()).padStart(2, "0");
+
+    const formattedDate = `${year}-${month}-${day}`;
+    setDate(formattedDate);
+  }, [daysToAdd]); // Dependency array includes `daysToAdd`
+
+  return date;
+}
+
+export { DynamicDate };

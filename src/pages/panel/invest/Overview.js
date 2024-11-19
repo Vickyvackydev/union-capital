@@ -166,7 +166,7 @@ const Overview = () => {
                   <div className="nk-iv-wg2-text">
                     <div className="nk-iv-wg2-amount">
                       {" "}
-                      {isLoading ? <Spinner size={"sm"} color={"light"} /> : userwallet?.balance}
+                      {isLoading ? <Spinner size={"sm"} color={"light"} /> : userwallet?.balance.toFixed(2)}
                       {
                         // <span className="change up">
                         //   <span className="sign"></span>3.4%
@@ -186,7 +186,7 @@ const Overview = () => {
                   <div className="nk-iv-wg2-text">
                     <div className="nk-iv-wg2-amount">
                       {" "}
-                      {isLoading ? <Spinner size={"sm"} color={"primary"} /> : overview_data?.total_invested}
+                      {isLoading ? <Spinner size={"sm"} color={"primary"} /> : overview_data?.total_invested.toFixed(2)}
                       {
                         // <span className="change up">
                         //   <span className="sign"></span>2.8%
@@ -206,7 +206,7 @@ const Overview = () => {
                   <div className="nk-iv-wg2-text">
                     <div className="nk-iv-wg2-amount">
                       {" "}
-                      {isLoading ? <Spinner size={"sm"} color={"primary"} /> : overview_data?.total_profit}
+                      {isLoading ? <Spinner size={"sm"} color={"primary"} /> : overview_data?.total_profit.toFixed(2)}
                       {
                         // <span className="change down">
                         //   <span className="sign"></span>1.4%
@@ -255,20 +255,26 @@ const Overview = () => {
                   </div>
                   <div className="nk-iv-wg2-text">
                     <div className="nk-iv-wg2-amount ui-v2">
-                      {userwallet?.balance + overview_data?.total_invested}.00
+                      {isLoading ? (
+                        <Spinner size={"sm"} color={"primary"} />
+                      ) : (
+                        <>{Number(userwallet?.balance + overview_data?.total_invested).toFixed(2)}</>
+                      )}
                     </div>
                     <ul className="nk-iv-wg2-list">
                       <li>
                         <span className="item-label">Available Funds</span>
-                        <span className="item-value">{userwallet?.balance}.00</span>
+                        <span className="item-value">{userwallet?.balance.toFixed(2)}</span>
                       </li>
                       <li>
                         <span className="item-label">Invested Funds</span>
-                        <span className="item-value">{overview_data?.total_invested}.00</span>
+                        <span className="item-value">{overview_data?.total_invested.toFixed(2)}</span>
                       </li>
                       <li className="total">
                         <span className="item-label">Total</span>
-                        <span className="item-value">{userwallet?.balance + overview_data?.total_invested}.00</span>
+                        <span className="item-value">
+                          {Number(userwallet?.balance + overview_data?.total_invested).toFixed(2)}
+                        </span>
                       </li>
                     </ul>
                   </div>
@@ -337,19 +343,25 @@ const Overview = () => {
             <Col md="12" lg="4">
               {" "}
               <PreviewAltCard className="nk-wg-card card-bordered h-100" bodyClass="h-100">
-                <div className="nk-iv-wg2">
-                  <div className="nk-iv-wg2-title">
-                    <h6 className="title">My Investment</h6>
+                {isLoading ? (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Spinner size={"xl"} color={"primary"} />
                   </div>
-                  <div className="nk-iv-wg2-text">
-                    <div className="nk-iv-wg2-amount ui-v2">
-                      {investments?.records?.length > 10
-                        ? investments?.records?.length
-                        : `0${investments?.records?.length}`}{" "}
-                      Active
+                ) : (
+                  <div className="nk-iv-wg2">
+                    <div className="nk-iv-wg2-title">
+                      <h6 className="title">My Investment</h6>
                     </div>
-                    <ul className="nk-iv-wg2-list">
-                      {/* <li>
+
+                    <div className="nk-iv-wg2-text">
+                      <div className="nk-iv-wg2-amount ui-v2">
+                        {investments?.records?.length > 10
+                          ? investments?.records?.length
+                          : `0${investments?.records?.length}`}{" "}
+                        Active
+                      </div>
+                      <ul className="nk-iv-wg2-list">
+                        {/* <li>
                         <span className="item-label">
                           <a href="#link" onClick={(ev) => ev.preventDefault()}>
                             Silver
@@ -358,7 +370,7 @@ const Overview = () => {
                         </span>
                         <span className="item-value">2,500.00</span>
                       </li> */}
-                      {/* <li>
+                        {/* <li>
                         <span className="item-label">
                           <a href="#link" onClick={(ev) => ev.preventDefault()}>
                             Silver
@@ -367,7 +379,7 @@ const Overview = () => {
                         </span>
                         <span className="item-value">2,000.00</span>
                       </li> */}
-                      {/* <li>
+                        {/* <li>
                         <span className="item-label">
                           <a href="#link" onClick={(ev) => ev.preventDefault()}>
                             Dimond
@@ -376,30 +388,31 @@ const Overview = () => {
                         </span>
                         <span className="item-value">8,000.00</span>
                       </li> */}
-                      {investments?.records?.map((item) => (
-                        <li>
-                          <span className="item-label">
-                            <a href="#link" onClick={(ev) => ev.preventDefault()}>
-                              {item?.plan?.name}
-                            </a>{" "}
-                            <small>
-                              - {item?.plan?.cumulative_profit}% for {item?.plan?.duration_days} Days
-                            </small>
-                          </span>
-                          <span className="item-value">{overview_data?.total_invested}</span>
-                        </li>
-                      ))}
-                    </ul>
+                        {investments?.records?.map((item) => (
+                          <li>
+                            <span className="item-label">
+                              <a href="#link" onClick={(ev) => ev.preventDefault()}>
+                                {item?.plan?.name}
+                              </a>{" "}
+                              <small>
+                                - {item?.plan?.cumulative_profit}% for {item?.plan?.duration_days} Days
+                              </small>
+                            </span>
+                            <span className="item-value">{overview_data?.total_invested}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="nk-iv-wg2-cta">
+                      <Button className="btn-block" color="light" size="lg">
+                        <Link to={`${process.env.PUBLIC_URL}/invest/schemes`} className="btn-block">
+                          <span style={{ color: "black" }}> See all Investment</span>
+                        </Link>
+                      </Button>
+                      <div className="cta-extra"></div>
+                    </div>
                   </div>
-                  <div className="nk-iv-wg2-cta">
-                    <Button className="btn-block" color="light" size="lg">
-                      <Link to={`${process.env.PUBLIC_URL}/invest/schemes`} className="btn-block">
-                        <span style={{ color: "black" }}> See all Investment</span>
-                      </Link>
-                    </Button>
-                    <div className="cta-extra"></div>
-                  </div>
-                </div>
+                )}
               </PreviewAltCard>
             </Col>
           </Row>

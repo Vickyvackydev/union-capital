@@ -43,6 +43,7 @@ import toast from "react-hot-toast";
 
 const InvestmentProcess = () => {
   const [currentPlan, setCurrentPlan] = useState(null);
+  const [createdInvestMent, setCreatedInvestMent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currency, setCurrency] = useState("usd");
   const [rangeVal, setRangVal] = useState("");
@@ -77,6 +78,9 @@ const InvestmentProcess = () => {
         });
         setModal(false);
         setConfirmModal(true);
+        setRangVal("");
+        setIsChecked(!isChecked);
+        setCreatedInvestMent(response?.data);
       }
     } catch (error) {
       console.error(error?.response?.data?.message); // Log detailed error
@@ -85,6 +89,8 @@ const InvestmentProcess = () => {
       setLoading(false);
     }
   };
+
+  console.log(createdInvestMent);
 
   useEffect(() => {
     const today = new Date();
@@ -627,7 +633,7 @@ const InvestmentProcess = () => {
                   </li>
                   <li>
                     <Link
-                      to={`${process.env.PUBLIC_URL}/invest/scheme-details/plan-v-1`}
+                      to={`${process.env.PUBLIC_URL}/invest/scheme-details/${createdInvestMent?.id}`}
                       className="btn btn-lg btn-mw btn-dim btn-primary"
                     >
                       <Icon name="reports"></Icon>

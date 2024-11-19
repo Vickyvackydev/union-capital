@@ -17,13 +17,19 @@ import { Button, Card, Col, DropdownItem, DropdownMenu, DropdownToggle, Row, Unc
 import { ProfitCharts } from "../../../components/partials/charts/panel/PanelCharts";
 import { BASE_URL } from "../../../App";
 import { useQuery } from "react-query";
-import { GetInvestmentApi } from "../../../services/service";
+import { GetInvestmentApi, GetUserWallet } from "../../../services/service";
+import moment from "moment";
+import { DynamicDate } from "../../../utils/Utils";
 
 const Plan = () => {
+  const [date, setDate] = useState("");
   const [investments, setInvestments] = useState([]);
   const { data: investmentData } = useQuery("investment", GetInvestmentApi);
 
+  const { data: user_wallet } = useQuery("wallet", GetUserWallet);
+
   console.log(investmentData);
+
   return (
     <React.Fragment>
       <Head title="Investments"></Head>
@@ -101,7 +107,7 @@ const Plan = () => {
                         <div className="nk-iv-wg3-sub">
                           <div className="nk-iv-wg3-amount">
                             <div className="number">
-                              18,752.84 <small className="currency currency-usd">USD</small>
+                              {user_wallet?.balance}.00 <small className="currency currency-usd">USD</small>
                             </div>
                           </div>
                           <div className="nk-iv-wg3-subtitle">Available Balance</div>
@@ -173,102 +179,64 @@ const Plan = () => {
         <Block size="lg">
           <BlockHead size="sm">
             <BlockTitle tag="h5">
-              Active Investments<span className="count text-base">(2)</span>
+              Active Investments<span className="count text-base">{`(${investmentData?.records?.length})`}</span>
             </BlockTitle>
           </BlockHead>
           <div className="nk-iv-scheme-list">
-            <div className="nk-iv-scheme-item">
-              <div className="nk-iv-scheme-icon is-running">
-                <Icon name="update"></Icon>
-              </div>
-              <div className="nk-iv-scheme-info">
-                <div className="nk-iv-scheme-name">Silver - Daily 4.76% for 21 Days</div>
-                <div className="nk-iv-scheme-desc">
-                  Invested Amount - <span className="amount">$250</span>
+            {investmentData?.records?.map((item) => (
+              <div className="nk-iv-scheme-item">
+                <div className="nk-iv-scheme-icon is-running">
+                  <Icon name="update"></Icon>
+                </div>
+                <div className="nk-iv-scheme-info">
+                  <div className="nk-iv-scheme-name">
+                    {item?.plan?.name} - Daily {item?.plan?.daily_profit}% for {item?.plan?.duration_days} Days
+                  </div>
+                  <div className="nk-iv-scheme-desc">
+                    Invested Amount - <span className="amount">${item?.amount?.toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className="nk-iv-scheme-term">
+                  <div className="nk-iv-scheme-start nk-iv-scheme-order">
+                    <span className="nk-iv-scheme-label text-soft">Start Date</span>
+                    <span className="nk-iv-scheme-value date">{moment(item?.created_at).format("MMM D, YYYY")}</span>
+                  </div>
+                  <div className="nk-iv-scheme-end nk-iv-scheme-order">
+                    <span className="nk-iv-scheme-label text-soft">End Date</span>
+                    <span className="nk-iv-scheme-value date">
+                      <DynamicDate daysToAdd={item?.plan?.duration_days} />
+                    </span>
+                  </div>
+                </div>
+                <div className="nk-iv-scheme-amount">
+                  <div className="nk-iv-scheme-amount-a nk-iv-scheme-order">
+                    <span className="nk-iv-scheme-label text-soft">Total Return</span>
+                    <span className="nk-iv-scheme-value amount">$ 2,500</span>
+                  </div>
+                  <div className="nk-iv-scheme-amount-b nk-iv-scheme-order">
+                    <span className="nk-iv-scheme-label text-soft">Net Profit Earn</span>
+                    <span className="nk-iv-scheme-value amount">
+                      $ 1145.25 <span className="amount-ex">~ $105.75</span>
+                    </span>
+                  </div>
+                </div>
+                <div className="nk-iv-scheme-more">
+                  <Link
+                    className="btn btn-icon btn-lg btn-round btn-trans"
+                    to={`${process.env.PUBLIC_URL}/invest/scheme-details/${item?.id}`}
+                  >
+                    <Icon name="forward-ios"></Icon>
+                  </Link>
+                </div>
+                <div className="nk-iv-scheme-progress">
+                  <div className="progress-bar" style={{ width: "90%" }}></div>
                 </div>
               </div>
-              <div className="nk-iv-scheme-term">
-                <div className="nk-iv-scheme-start nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">Start Date</span>
-                  <span className="nk-iv-scheme-value date">Nov 04, 2019</span>
-                </div>
-                <div className="nk-iv-scheme-end nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">End Date</span>
-                  <span className="nk-iv-scheme-value date">Nov 25, 2019</span>
-                </div>
-              </div>
-              <div className="nk-iv-scheme-amount">
-                <div className="nk-iv-scheme-amount-a nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">Total Return</span>
-                  <span className="nk-iv-scheme-value amount">$ 499.99</span>
-                </div>
-                <div className="nk-iv-scheme-amount-b nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">Net Profit Earn</span>
-                  <span className="nk-iv-scheme-value amount">
-                    $ 97.95 <span className="amount-ex">~ $152.04</span>
-                  </span>
-                </div>
-              </div>
-              <div className="nk-iv-scheme-more">
-                <Link
-                  className="btn btn-icon btn-lg btn-round btn-trans"
-                  to={`${process.env.PUBLIC_URL}/invest/scheme-details/plan-v-1`}
-                >
-                  <Icon name="forward-ios"></Icon>
-                </Link>
-              </div>
-              <div className="nk-iv-scheme-progress">
-                <div className="progress-bar" style={{ width: "25%" }}></div>
-              </div>
-            </div>
-            <div className="nk-iv-scheme-item">
-              <div className="nk-iv-scheme-icon is-running">
-                <Icon name="update"></Icon>
-              </div>
-              <div className="nk-iv-scheme-info">
-                <div className="nk-iv-scheme-name">Silver - Daily 4.76% for 21 Days</div>
-                <div className="nk-iv-scheme-desc">
-                  Invested Amount - <span className="amount">$1,250</span>
-                </div>
-              </div>
-              <div className="nk-iv-scheme-term">
-                <div className="nk-iv-scheme-start nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">Start Date</span>
-                  <span className="nk-iv-scheme-value date">Oct 30, 2019</span>
-                </div>
-                <div className="nk-iv-scheme-end nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">End Date</span>
-                  <span className="nk-iv-scheme-value date">Nov 19, 2019</span>
-                </div>
-              </div>
-              <div className="nk-iv-scheme-amount">
-                <div className="nk-iv-scheme-amount-a nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">Total Return</span>
-                  <span className="nk-iv-scheme-value amount">$ 2,500</span>
-                </div>
-                <div className="nk-iv-scheme-amount-b nk-iv-scheme-order">
-                  <span className="nk-iv-scheme-label text-soft">Net Profit Earn</span>
-                  <span className="nk-iv-scheme-value amount">
-                    $ 1145.25 <span className="amount-ex">~ $105.75</span>
-                  </span>
-                </div>
-              </div>
-              <div className="nk-iv-scheme-more">
-                <Link
-                  className="btn btn-icon btn-lg btn-round btn-trans"
-                  to={`${process.env.PUBLIC_URL}/invest/scheme-details/plan-v-2`}
-                >
-                  <Icon name="forward-ios"></Icon>
-                </Link>
-              </div>
-              <div className="nk-iv-scheme-progress">
-                <div className="progress-bar" style={{ width: "90%" }}></div>
-              </div>
-            </div>
+            ))}
           </div>
         </Block>
 
-        <Block>
+        {/* <Block>
           <BlockHead size="sm">
             <BlockBetween>
               <BlockHeadContent>
@@ -367,7 +335,7 @@ const Plan = () => {
               </div>
             </div>
           </div>
-        </Block>
+        </Block> */}
       </Content>
     </React.Fragment>
   );

@@ -42,3 +42,7 @@ export const GetInvestmentApi = async () => {
   const response = await API.get("/investments/user");
   return response?.data?.data;
 };
+export const GetSingleInvestment = async (id) => {
+  const response = await API.get(`/investments/investment/${id}`);
+  return response?.data?.data;
+};
