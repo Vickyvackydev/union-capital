@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { BASE_URL } from "../../App";
 import { useMutation } from "react-query";
-import { LoginApi, VerifyApi } from "../../services/auths/service";
+import { LoginApi, RegisterApi, VerifyApi } from "../../services/auths/service";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser, setToken, setUser } from "../../state/slices/authreducer";
 import toast from "react-hot-toast";
@@ -69,6 +69,28 @@ const OtpPage = ({ history }) => {
       }
     } catch (error) {
       toast.error(res?.error?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        full_name: user.full_name,
+        email: user.email,
+        password: user.password,
+        referred_by: "",
+      };
+      const res = await RegisterApi(payload);
+      if (res) {
+        dispatch(setUser(res?.data));
+        toast.success("otp has being sent");
+        // setTimeout(() => history.push(`${process.env.PUBLIC_URL}/auth-success`), 2000);
+      }
+    } catch (error) {
+      toast.error(res?.error?.data?.message || res?.message);
     } finally {
       setLoading(false);
     }
@@ -153,7 +175,7 @@ const OtpPage = ({ history }) => {
                     name="otp"
                     value={formdata.otp}
                     onChange={handleInputChange}
-                    placeholder="Enter your email address or username"
+                    placeholder="Enter your email address"
                     className="form-control-lg form-control"
                   />
                   {errors.name && <span className="invalid">{errors.name.message}</span>}
@@ -209,7 +231,7 @@ const OtpPage = ({ history }) => {
                   color: "#4848dd",
                   cursor: "pointer",
                 }}
-                onClick={handleFormSubmit}
+                onClick={handleResendOtp}
               >
                 Resend code
               </span>

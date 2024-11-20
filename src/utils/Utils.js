@@ -199,6 +199,28 @@ export const returnLevel = (currency, data, upperCase) => {
   }
 };
 
+// function DynamicDate({ daysToAdd }) {
+//   const [date, setDate] = useState("");
+
+//   useEffect(() => {
+//     const today = new Date();
+//     const resultDate = new Date(today.setDate(today.getDate() + daysToAdd));
+
+//     const year = resultDate.getFullYear();
+//     const month = String(resultDate.getMonth() + 1).padStart(2, "0");
+//     const day = String(resultDate.getDate()).padStart(2, "0");
+
+//     const formattedDate = `${year}-${month}-${day}`;
+//     // const resultDate = new Date(today.setDate(today.getDate() + daysToAdd));
+
+//     // const options = { year: "numeric", month: "short", day: "numeric" };
+//     // const formattedDate = resultDate.toLocaleDateString("en-US", options);
+//     setDate(formattedDate);
+//   }, [daysToAdd]); // Dependency array includes `daysToAdd`
+
+//   return date;
+// }
+
 function DynamicDate({ daysToAdd }) {
   const [date, setDate] = useState("");
 
@@ -206,11 +228,13 @@ function DynamicDate({ daysToAdd }) {
     const today = new Date();
     const resultDate = new Date(today.setDate(today.getDate() + daysToAdd));
 
-    const year = resultDate.getFullYear();
-    const month = String(resultDate.getMonth() + 1).padStart(2, "0");
-    const day = String(resultDate.getDate()).padStart(2, "0");
+    // Format the date as "Nov 24, 2024"
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(resultDate);
 
-    const formattedDate = `${year}-${month}-${day}`;
     setDate(formattedDate);
   }, [daysToAdd]); // Dependency array includes `daysToAdd`
 

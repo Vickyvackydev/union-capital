@@ -19,7 +19,7 @@ import { Badge, Button, Col, Row, Card } from "reactstrap";
 import { pricingTableDataV1, activePlans } from "../data";
 import { dayRemainKnob, netProfitKnob, overviewKnob, transactionData } from "../data";
 import { useQuery } from "react-query";
-import { GetSingleInvestment } from "../../../../services/service";
+import { GetSingleInvestment, GetSingleTransaction } from "../../../../services/service";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
 import moment from "moment";
 import { DynamicDate } from "../../../../utils/Utils";
@@ -29,8 +29,9 @@ const InvestmentDetails = ({ match }) => {
   // const { id } = useParams();
   const id = window.location.pathname.split("/").pop();
   const { data: investment_details } = useQuery(["investment_id", id], () => GetSingleInvestment(id));
+  const { data: transaction_details } = useQuery(["transaction_id", id], () => GetSingleTransaction(id));
 
-  console.log(investment_details);
+  console.log(transaction_details);
 
   useEffect(() => {
     let foundEl = pricingTableDataV1.find((item) => item.id === match.params.id);
@@ -172,8 +173,8 @@ const InvestmentDetails = ({ match }) => {
                   <li>
                     <div className="sub-text">Term end at</div>
                     <div className="lead-text">
-                      <DynamicDate daysToAdd={investment_details?.plan?.duration_days} />{" "}
-                      {moment(investment_details?.created_at).format("h:mma")}
+                      {moment(investment_details?.end_date).format("MMM D, YYYY h:mma")}
+                      {/* <DynamicDate daysToAdd={Number(investment_details?.plan?.duration_days)} />{" "} */}
                     </div>
                   </li>
                   <li>
@@ -221,17 +222,14 @@ const InvestmentDetails = ({ match }) => {
                     <div className="sub-text">Net profit</div>
                     <div className="lead-text">
                       <span className="currency currency-usd">USD</span>{" "}
-                      {Number(
-                        investment_details?.plan?.min_deposit *
-                          (investment_details?.plan?.daily_profit / 100) *
-                          investment_details?.plan?.duration_days
-                      ).toFixed(2)}
+                      {investment_details?.expected_net_return.toFixed(2)}
                     </div>
                   </li>
                   <li>
                     <div className="sub-text">Total return</div>
                     <div className="lead-text">
-                      {/* <span className="currency currency-usd">USD</span> {totalReturn()} */}
+                      <span className="currency currency-usd">USD</span>{" "}
+                      {investment_details?.expected_total_return.toFixed(2)}
                     </div>
                   </li>
                 </ul>

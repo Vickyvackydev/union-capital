@@ -58,7 +58,7 @@ const Overview = () => {
     setTimeout(() => setCopy(false), 2000);
   };
 
-  console.log(investments);
+  console.log(overview_data);
 
   return (
     <React.Fragment>
@@ -288,6 +288,9 @@ const Overview = () => {
                     <Link to={`${process.env.PUBLIC_URL}/invest/wallet-form`} className="btn btn-trans btn-block">
                       Deposit Funds
                     </Link>
+                    <Link to={`${process.env.PUBLIC_URL}/invest/transfer-process`} className="btn btn-trans btn-block">
+                      Transfer Funds
+                    </Link>
                   </div>
                 </div>
               </PreviewAltCard>
@@ -331,7 +334,7 @@ const Overview = () => {
                       </Link>
                     </Button>
                     <div className="cta-extra">
-                      Earn up to 5${" "}
+                      Earn up to 5%{" "}
                       <a href="#link" onClick={(ev) => ev.preventDefault()} className="link link-dark">
                         Refer friend!
                       </a>
@@ -398,7 +401,7 @@ const Overview = () => {
                                 - {item?.plan?.cumulative_profit}% for {item?.plan?.duration_days} Days
                               </small>
                             </span>
-                            <span className="item-value">{overview_data?.total_invested}</span>
+                            <span className="item-value">{item?.amount}</span>
                           </li>
                         ))}
                       </ul>

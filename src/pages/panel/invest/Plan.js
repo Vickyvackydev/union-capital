@@ -17,13 +17,13 @@ import { Button, Card, Col, DropdownItem, DropdownMenu, DropdownToggle, Row, Unc
 import { ProfitCharts } from "../../../components/partials/charts/panel/PanelCharts";
 import { BASE_URL } from "../../../App";
 import { useQuery } from "react-query";
-import { GetInvestmentApi, GetUserWallet } from "../../../services/service";
+import { GetInvestmentApi, GetUserWallet, overviewAnalyticsApi } from "../../../services/service";
 import moment from "moment";
 import { DynamicDate } from "../../../utils/Utils";
 
 const Plan = () => {
   const [date, setDate] = useState("");
-  const [investments, setInvestments] = useState([]);
+  const { data: overview_data } = useQuery("overview", overviewAnalyticsApi);
   const { data: investmentData } = useQuery("investment", GetInvestmentApi);
 
   const { data: user_wallet } = useQuery("wallet", GetUserWallet);
@@ -117,7 +117,7 @@ const Plan = () => {
                             <Icon name="plus"></Icon>
                           </span>
                           <div className="nk-iv-wg3-amount">
-                            <div className="number-sm">1,500.05</div>
+                            <div className="number-sm">{overview_data?.total_invested.toFixed(2)}</div>
                           </div>
                           <div className="nk-iv-wg3-subtitle">
                             Locked Balance{" "}
@@ -139,7 +139,7 @@ const Plan = () => {
                         <div className="nk-iv-wg3-sub-group gx-4">
                           <div className="nk-iv-wg3-sub">
                             <div className="nk-iv-wg3-amount">
-                              <div className="number">5,394.62</div>
+                              <div className="number">{overview_data?.total_profit.toFixed(2)}</div>
                             </div>
                             <div className="nk-iv-wg3-subtitle">Total Profit</div>
                           </div>
@@ -148,7 +148,7 @@ const Plan = () => {
                               <Icon name="plus"></Icon>
                             </span>
                             <div className="nk-iv-wg3-amount">
-                              <div className="number-sm">1,50.05</div>
+                              <div className="number-sm">{overview_data?.todays_profit.toFixed(2)}</div>
                             </div>
                             <div className="nk-iv-wg3-subtitle">Today Profit</div>
                           </div>
@@ -204,19 +204,20 @@ const Plan = () => {
                   <div className="nk-iv-scheme-end nk-iv-scheme-order">
                     <span className="nk-iv-scheme-label text-soft">End Date</span>
                     <span className="nk-iv-scheme-value date">
-                      <DynamicDate daysToAdd={item?.plan?.duration_days} />
+                      {/* <DynamicDate daysToAdd={item?.plan?.duration_days} /> */}
+                      {moment(item?.end_date).format("MMM D, YYYY")}
                     </span>
                   </div>
                 </div>
                 <div className="nk-iv-scheme-amount">
                   <div className="nk-iv-scheme-amount-a nk-iv-scheme-order">
                     <span className="nk-iv-scheme-label text-soft">Total Return</span>
-                    <span className="nk-iv-scheme-value amount">$ 2,500</span>
+                    <span className="nk-iv-scheme-value amount">${item?.expected_net_return.toFixed(2)}</span>
                   </div>
                   <div className="nk-iv-scheme-amount-b nk-iv-scheme-order">
                     <span className="nk-iv-scheme-label text-soft">Net Profit Earn</span>
                     <span className="nk-iv-scheme-value amount">
-                      $ 1145.25 <span className="amount-ex">~ $105.75</span>
+                      <span className="amount-ex">~ ${item?.expected_total_return.toFixed(2)}</span>
                     </span>
                   </div>
                 </div>

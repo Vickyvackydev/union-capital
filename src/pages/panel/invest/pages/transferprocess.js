@@ -35,7 +35,7 @@ import { selectUser } from "../../../../state/slices/authreducer";
 import { useSelector } from "react-redux";
 import { TokenBTC, TokenETH, TokenIcon, TokenSOL } from "@web3icons/react";
 
-const WalletProcess = ({ history }) => {
+const TransferProcess = ({ history }) => {
   const [loading, setLoading] = useState();
   const [currentPlan, setCurrentPlan] = useState();
   const [currency, setCurrency] = useState("usd");
@@ -49,6 +49,7 @@ const WalletProcess = ({ history }) => {
 
   const [formData, setFormData] = useState({
     amount: 0,
+    email: "",
     transaction_id: "",
   });
 
@@ -209,7 +210,7 @@ const WalletProcess = ({ history }) => {
         <BlockHead>
           <BlockHeadContent>
             <BlockTitle tag="h2" className="fw-normal">
-              Add Funds to Wallet
+              Transfer Funds
             </BlockTitle>
           </BlockHeadContent>
         </BlockHead>
@@ -228,6 +229,18 @@ const WalletProcess = ({ history }) => {
                       id="custom-amount"
                       placeholder="Enter Amount"
                       value={formData.amount}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      name="email"
+                      className="form-control form-control-amount form-control-lg"
+                      style={{ borderRadius: 0 }}
+                      id="custom-amount"
+                      placeholder="Enter user address"
+                      value={formData.email}
                       onChange={handleChange}
                     />
                   </div>
@@ -553,4 +566,4 @@ const WalletProcess = ({ history }) => {
   );
 };
 
-export default WalletProcess;
+export default TransferProcess;

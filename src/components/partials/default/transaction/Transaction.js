@@ -25,19 +25,39 @@ const TransactionTable = () => {
   const { data: transaction_data } = useQuery("transactions", GetTransactions);
   const [data, setData] = useState(transaction_data);
   const [trans, setTrans] = useState("");
-  useEffect(() => {
-    let filteredData;
-    if (trans === "pending") {
-      filteredData = transaction_data?.records?.filter((item) => item.status === "pending");
-    } else if (trans === "approved") {
-      filteredData = transaction_data?.records?.filter((item) => item.status === "approved");
-    } else if (trans === "all") {
-      filteredData = transaction_data?.records;
-    } else {
-      filteredData === transaction_data?.records;
+
+  const pendingTransaction = transaction_data?.records?.filter((item) => item.status === "pending");
+  const approvedTransaction = transaction_data?.records?.filter((item) => item.status === "approved");
+  const allTransaction = transaction_data?.records;
+  const switchTransactions = () => {
+    switch (trans) {
+      case "pending":
+        return pendingTransaction;
+
+        break;
+      case "approved":
+        return approvedTransaction;
+
+      case "all":
+        return allTransaction;
+      default:
+        return allTransaction;
+        break;
     }
-    setData(filteredData);
-  }, [trans]);
+  };
+  // useEffect(() => {
+  //   let filteredData;
+  //   if (trans === "pending") {
+
+  //   } else if (trans === "approved") {
+  //     filteredData = transaction_data?.records?.filter((item) => item.status === "approved");
+  //   } else if (trans === "all") {
+  //     filteredData = transaction_data?.records;
+  //   } else {
+  //     filteredData === transaction_data?.records;
+  //   }
+  //   setData(filteredData);
+  // }, [trans]);
 
   console.log(transaction_data);
 
@@ -100,11 +120,12 @@ const TransactionTable = () => {
             //   <span>Wallet Address</span>
             // </DataTableRow>
           }
-          {/* <DataTableRow size="sm">
-            <span>Type</span>
-          </DataTableRow> */}
+
           <DataTableRow size="md">
             <span>Date</span>
+          </DataTableRow>
+          <DataTableRow size="sm">
+            <span>Type</span>
           </DataTableRow>
           {
             // <DataTableRow size="lg">
@@ -121,12 +142,38 @@ const TransactionTable = () => {
             <span>&nbsp;</span>
           </DataTableRow>
         </DataTableHead>
-        {data !== undefined && data.length > 0 ? (
+        {switchTransactions() !== undefined && switchTransactions().length > 0 ? (
           <>
-            {data.map((item, idx) => (
+            {switchTransactions()?.map((item, idx) => (
               <DataTableItem key={idx}>
                 <DataTableRow size="md">
                   <span className="tb-sub">{moment(item?.created_at).format("MMM D, YYYY h:mma")}</span>
+                </DataTableRow>
+                {/* <DataTableRow size="sm">
+                  <div className="user-card">
+                    <div className="user-name">
+                      <span
+                        className="tb-lead"
+                        style={{
+                          color: `${
+                            item?.type === "deposit" ? "green" : item?.type === "plan_activation" ? "blue" : "red"
+                          }`,
+                        }}
+                      >
+                        {item.type}
+                      </span>
+                    </div>
+                  </div>
+                </DataTableRow> */}
+                <DataTableRow>
+                  <Badge
+                    className="badge-dot badge-dot-xs"
+                    color={
+                      item?.type === "deposit" ? "success" : item?.type === "plan_activation" ? "warning" : "danger"
+                    }
+                  >
+                    {item?.type === "plan_activation" ? "plan activation" : item?.type}
+                  </Badge>
                 </DataTableRow>
                 <DataTableRow>
                   <span className="tb-sub tb-amount">

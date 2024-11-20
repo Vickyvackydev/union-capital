@@ -118,6 +118,7 @@ import TransactionTable from "../components/partials/default/transaction/Transac
 import WalletProcess from "../pages/panel/invest/pages/WalletProcess";
 import WithdrawalProcess from "../pages/panel/invest/pages/WithdrawalProcess";
 import ReferalsPage from "../pages/pre-built/user-manage/Referals";
+import TransferProcess from "../pages/panel/invest/pages/transferprocess";
 // import ReferalsPage from "../pages/pre-built/user-manage/Referals";
 
 const Pages = () => {
@@ -142,6 +143,7 @@ const Pages = () => {
         <Route exact path={`${process.env.PUBLIC_URL}/invest/index`} component={Overview}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/invest/wallet-form`} component={WalletProcess}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/invest/withdrawal`} component={WithdrawalProcess}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/invest/transfer-process`} component={TransferProcess}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/invest/schemes`} component={Plan}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/invest/transactions`} component={TransactionTable}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/invest/profile`} component={Profile}></Route>
