@@ -23,6 +23,7 @@ import { LoginApi } from "../../services/auths/service";
 import { useDispatch } from "react-redux";
 import { setToken, setUser } from "../../state/slices/authreducer";
 import toast from "react-hot-toast";
+import { setTransferPassCode } from "../../state/slices/globalreducer";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,7 @@ const Login = () => {
   };
   const handleFormSubmit = async () => {
     setLoading(true);
+    dispatch(setTransferPassCode(formdata.password));
     try {
       const payload = {
         email: formdata.email,
@@ -153,7 +155,7 @@ const Login = () => {
                     name="email"
                     value={formdata.email}
                     onChange={handleInputChange}
-                    placeholder="Enter your email address or username"
+                    placeholder="Enter your email address"
                     className="form-control-lg form-control"
                   />
                   {errors.name && <span className="invalid">{errors.name.message}</span>}

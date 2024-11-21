@@ -50,3 +50,7 @@ export const GetSingleTransaction = async (id) => {
   const response = await API.get(`/transactions/${id}`);
   return response?.data?.data;
 };
+export const TransferFundsApi = async (data) => {
+  const response = await API.post(`/wallets/transfer`, data);
+  return response?.data;
+};

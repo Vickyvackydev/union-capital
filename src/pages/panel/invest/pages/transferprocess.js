@@ -28,12 +28,19 @@ import {
   Icon,
 } from "../../../../components/Component";
 import { useMutation, useQuery } from "react-query";
-import { GetPaymentMethods, GetWalletsByUserId, SubmitPaymentApi } from "../../../../services/service";
+import {
+  GetPaymentMethods,
+  GetWalletsByUserId,
+  SubmitPaymentApi,
+  TransferFundsApi,
+} from "../../../../services/service";
 import QRCode from "react-qr-code";
 import toast from "react-hot-toast";
 import { selectUser } from "../../../../state/slices/authreducer";
 import { useSelector } from "react-redux";
 import { TokenBTC, TokenETH, TokenIcon, TokenSOL } from "@web3icons/react";
+import { RegisterApi } from "../../../../services/auths/service";
+import { transferCode } from "../../../../state/slices/globalreducer";
 
 const TransferProcess = ({ history }) => {
   const [loading, setLoading] = useState();
@@ -46,16 +53,17 @@ const TransferProcess = ({ history }) => {
   const [isChecked, setIsChecked] = useState(false);
 
   const [paymentDoneModal, setPaymentDoneModal] = useState(false);
-
+  const transferPin = useSelector(transferCode);
   const [formData, setFormData] = useState({
     amount: 0,
     email: "",
-    transaction_id: "",
+
+    password: "",
   });
 
   const [paymentMethod, setPaymentMethod] = useState({});
   const isNotValid = () => {
-    return formData.amount === "" || !paymentMethod.currency || !isChecked;
+    return formData.amount === "" || formData.email === "" || !isChecked;
   };
 
   const switchTokenIcons = () => {
@@ -102,32 +110,39 @@ const TransferProcess = ({ history }) => {
   };
   const user = useSelector(selectUser);
   const user_id = user?.id;
+  console.log(user);
 
   const { data: walletData } = useQuery(["wallet", user_id], () => GetWalletsByUserId(user_id));
+
   const handlePayment = async () => {
     setLoading(true);
 
     const payload = {
-      Amount: Number(formData.amount),
-      payment_method: paymentMethod.currency,
-      tx_id: formData.transaction_id,
+      amount: Number(formData.amount),
+      recipient_email: formData.email,
     };
-    try {
-      const res = await SubmitPaymentApi(payload); // Pass formData
-      if (res) {
-        setModal(false);
-        setPaymentDoneModal(true);
-        toast.success("Payment has being confirmed");
-        setFormData({
-          amount: 0,
-          transaction_id: "",
-        });
-      }
-    } catch (error) {
-      console.error(error?.response?.data?.message); // Log detailed error
-      toast.error(error?.response?.data?.message || error?.message); // Show error message
-    } finally {
+
+    if (formData.password !== transferPin) {
+      toast.error("incorrect password");
       setLoading(false);
+    } else {
+      try {
+        const res = await TransferFundsApi(payload); // Pass formData
+        if (res) {
+          setModal(false);
+          setPaymentDoneModal(true);
+          toast.success("Money has being transferred to your recipient");
+          setFormData({
+            amount: 0,
+            password: "",
+          });
+        }
+      } catch (error) {
+        console.error(error?.response?.data?.message); // Log detailed error
+        toast.error(error?.response?.data?.message || error?.message); // Show error message
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -245,96 +260,7 @@ const TransferProcess = ({ history }) => {
                     />
                   </div>
                 </div>
-                <div className="form-group invest-field">
-                  <div className="form-label-group">{<label className="form-label">Pick a Payment Method</label>}</div>
-                  <input type="hidden" defaultValue="wallet" name="iv-wallet" id="invest-choose-wallet" />
-                  <UncontrolledDropdown className="invest-cc-dropdown">
-                    <DropdownToggle
-                      tag="a"
-                      onClick={(ev) => ev.preventDefault()}
-                      href="#toggle"
-                      className="invest-cc-chosen dropdown-indicator"
-                    >
-                      <div className="coin-item">
-                        <div className="coin-icon">
-                          {switchTokenIcons() || <Icon name="offer-fill"></Icon>}
-                          {/* <TokenIcon symbol={`eth`} variant="mono" /> */}
-                        </div>
-                        <div className="coin-info">
-                          <span>{paymentMethod?.currency || "Select payment method"}</span>
-                        </div>
-                      </div>
-                    </DropdownToggle>
 
-                    <DropdownMenu className="dropdown-menu-auto dropdown-menu-mxh">
-                      {paymentMethods?.map((item) => (
-                        <li className={`invest-cc-item`} onClick={() => setPaymentMethod(item)}>
-                          <DropdownItem
-                            tag="a"
-                            href="#dropdown-item"
-                            onClick={(ev) => ev.preventDefault()}
-                            className="invest-cc-opt"
-                          >
-                            <div className="coin-item">
-                              <div className="coin-icon">{switchTokenIconsV2(item?.currency)}</div>
-                              <div className="coin-info">
-                                <span className="coin-name">{item?.currency}</span>
-                              </div>
-                            </div>
-                          </DropdownItem>
-                        </li>
-                      ))}
-                      {/* <li
-                        className="invest-cc-item"
-                        onClick={() =>
-                          setPaymentMethod({
-                            label: "BTC",
-                          })
-                        }
-                      >
-                        <DropdownItem
-                          tag="a"
-                          href="#dropdown-item"
-                          onClick={(ev) => ev.preventDefault()}
-                          className="invest-cc-opt"
-                        >
-                          <div className="coin-item">
-                            <div className="coin-icon">
-                              <Icon name="offer-fill"></Icon>
-                            </div>
-                            <div className="coin-info">
-                              <span className="coin-name">BTC</span>
-                            </div>
-                          </div>
-                        </DropdownItem>
-                      </li> */}
-                      {/* <li
-                        className="invest-cc-item"
-                        onClick={() =>
-                          setPaymentMethod({
-                            label: "ETH",
-                          })
-                        }
-                      >
-                        <DropdownItem
-                          tag="a"
-                          href="#dropdown-item"
-                          onClick={(ev) => ev.preventDefault()}
-                          className="invest-cc-opt"
-                        >
-                          <div className="coin-item">
-                            <div className="coin-icon">
-                              <Icon name="offer-fill"></Icon>
-                            </div>
-                            <div className="coin-info">
-                              <span className="coin-name">ETH</span>
-                            </div>
-                          </div>
-                        </DropdownItem>
-                      </li> */}
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                </div>
                 <div className="form-group invest-field">
                   <div className="custom-control custom-control-xs custom-checkbox">
                     <input
@@ -475,29 +401,19 @@ const TransferProcess = ({ history }) => {
         <Modal isOpen={modal} toggle={() => toggleModal()} className="modal-dialog-centered" size="lg">
           <ModalBody className="modal-body-md text-center">
             <div className="nk-modal">
-              <div className="nk-modal-text">
-                <span className="coin-text">Address : {paymentMethod?.wallet_address}</span>
-
-                <QRCode
-                  size={256}
-                  style={{ height: "auto", maxWidth: "100%", width: "25%", marginTop: "4px" }}
-                  value={paymentMethod?.wallet_address}
-                  viewBox={`0 0 256 256`}
-                />
-              </div>
               <div className="nk-modal-form">
                 <div className="form-group">
                   <span className="coin-text" style={{ display: "flex", alignItems: "start", justifyContent: "start" }}>
-                    Please enter the transaction hash ID to comfirm your payment.
+                    Please enter your password to continue.
                   </span>
                   <input
                     type="text"
                     className="form-control form-control-amount form-control-lg"
                     style={{ borderRadius: 0 }}
                     id="custom-amount"
-                    name="transaction_id"
-                    placeholder="Enter Hash ID"
-                    value={formData.transaction_id}
+                    name="password"
+                    placeholder="Enter password"
+                    value={formData.password}
                     onChange={handleChange}
                   />
                 </div>
@@ -512,7 +428,7 @@ const TransferProcess = ({ history }) => {
                   //   toggleConfirmModal();
                   //   togglePaymentDoneModal();
                   // }}
-                  disabled={!formData.transaction_id}
+                  disabled={!formData.password}
                   onClick={handlePayment}
                 >
                   {loading ? "Please wait..." : "Confirm Payment"}
@@ -542,9 +458,7 @@ const TransferProcess = ({ history }) => {
           <ModalBody className="modal-body-md text-center">
             <div className="nk-modal">
               <div className="nk-modal-text">
-                <span className="item-label">
-                  Your deposit will reflect on your wallet balance once the transaction is confirmed on Blockchain
-                </span>
+                <span className="item-label">Payment has being sent to your recipient address!</span>
               </div>
               <div className="nk-modal-action">
                 <Button

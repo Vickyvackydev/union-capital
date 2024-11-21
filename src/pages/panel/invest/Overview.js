@@ -43,6 +43,8 @@ const settings = {
 };
 
 const Overview = () => {
+  const reward = 200;
+
   const [referral, setReferral] = useState("7");
   const [copy, setCopy] = useState(false);
   const { data: overview_data } = useQuery("overview", overviewAnalyticsApi);
@@ -57,6 +59,7 @@ const Overview = () => {
     setCopy(true);
     setTimeout(() => setCopy(false), 2000);
   };
+  const total = overview_data?.total_profit + overview_data?.referral_earnings + reward;
 
   console.log(overview_data);
 
@@ -303,7 +306,7 @@ const Overview = () => {
                   </div>
                   <div className="nk-iv-wg2-text">
                     <div className="nk-iv-wg2-amount ui-v2">
-                      1,457.23{" "}
+                      {total.toFixed(2)}{" "}
                       <span className="change up">
                         <span className="sign"></span>4.5%
                       </span>
@@ -311,11 +314,11 @@ const Overview = () => {
                     <ul className="nk-iv-wg2-list">
                       <li>
                         <span className="item-label">Profits</span>
-                        <span className="item-value">1,045.21</span>
+                        <span className="item-value">{overview_data?.total_profit.toFixed(2)}</span>
                       </li>
                       <li>
                         <span className="item-label">Referrals</span>
-                        <span className="item-value">212.02</span>
+                        <span className="item-value">{overview_data?.referral_earnings.toFixed(2)}</span>
                       </li>
                       <li>
                         <span className="item-label">Rewards</span>
@@ -323,7 +326,7 @@ const Overview = () => {
                       </li>
                       <li className="total">
                         <span className="item-label">Total Profit</span>
-                        <span className="item-value">1,457.23</span>
+                        <span className="item-value">{total.toFixed(2)}</span>
                       </li>
                     </ul>
                   </div>
@@ -461,7 +464,7 @@ const Overview = () => {
                 <div className="nk-refwg-group g-3">
                   <div className="nk-refwg-name">
                     <Link to={`${process.env.PUBLIC_URL}/referals`} className="title">
-                      My Referral{" "}
+                      Show My Referral{" "}
                       <TooltipComponent icon="info" id="referral-data" direction="right" text="Referral Information" />
                     </Link>
                   </div>

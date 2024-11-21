@@ -172,7 +172,11 @@ const TransactionTable = () => {
                       item?.type === "deposit" ? "success" : item?.type === "plan_activation" ? "warning" : "danger"
                     }
                   >
-                    {item?.type === "plan_activation" ? "plan activation" : item?.type}
+                    {item?.type === "plan_activation"
+                      ? "plan activation"
+                      : item?.type === "transfer_out"
+                      ? "transfer"
+                      : item?.type}
                   </Badge>
                 </DataTableRow>
                 <DataTableRow>

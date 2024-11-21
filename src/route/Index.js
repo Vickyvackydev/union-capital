@@ -68,7 +68,7 @@ import SVGIconPage from "../pages/components/crafted-icons/SvgIcons";
 
 import ProjectCardPage from "../pages/pre-built/projects/ProjectCard";
 import ProjectListPage from "../pages/pre-built/projects/ProjectList";
-import UserListRegularPage from "../pages/pre-built/user-manage/Referals";
+
 import UserContactCardPage from "../pages/pre-built/user-manage/UserContactCard";
 import UserDetailsPage from "../pages/pre-built/user-manage/UserDetailsRegular";
 import UserListCompact from "../pages/pre-built/user-manage/UserListCompact";
@@ -117,9 +117,8 @@ import { FileManagerContextProvider } from "../pages/app/file-manager/FileManage
 import TransactionTable from "../components/partials/default/transaction/Transaction";
 import WalletProcess from "../pages/panel/invest/pages/WalletProcess";
 import WithdrawalProcess from "../pages/panel/invest/pages/WithdrawalProcess";
-import ReferalsPage from "../pages/pre-built/user-manage/Referals";
+
 import TransferProcess from "../pages/panel/invest/pages/transferprocess";
-// import ReferalsPage from "../pages/pre-built/user-manage/Referals";
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -139,7 +138,7 @@ const Pages = () => {
 
         {/*Panel*/}
         <Route exact path={`${process.env.PUBLIC_URL}/invest`} component={Overview}></Route>
-        <Route exact path={`${process.env.PUBLIC_URL}/referals`} component={ReferalsPage}></Route>
+        {/* <Route exact path={`${process.env.PUBLIC_URL}/referals`} component={ReferalsTable}></Route> */}
         <Route exact path={`${process.env.PUBLIC_URL}/invest/index`} component={Overview}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/invest/wallet-form`} component={WalletProcess}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/invest/withdrawal`} component={WithdrawalProcess}></Route>
